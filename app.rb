@@ -15,12 +15,11 @@ end
 
 set :bind, '0.0.0.0'
 
-get '/' do
-	status 200
+error do
+  status 500
 end
 
-get '/users/:id' do
-  if User.exists?(params[:id])
-    User.find(params[:id]).to_json(:except => [:password])
-  end
+get '/search/users' do
+  mail = params[:q]
+  User.where(email = mail).to_json
 end
