@@ -18,3 +18,9 @@ set :bind, '0.0.0.0'
 get '/' do
 	status 200
 end
+
+get '/users/:id' do
+  if User.exists?(params[:id])
+    User.find(params[:id]).to_json(:except => [:password])
+  end
+end
