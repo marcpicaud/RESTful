@@ -8,6 +8,10 @@ class App < Sinatra::Base
     content_type :json
   end
 
+  not_found do
+    status 404
+  end
+
   get '/' do
     status 200
   end
@@ -49,11 +53,11 @@ class App < Sinatra::Base
     if users.blank?
       status 404
     else
-      users.to_json
+      users.to_json(:except => [:id])
     end
   end
 
-  delete '/users/:id' do
+  delete '/users/:id/' do
     param :id, Integer, max: 2147483647, min: -2147483648
 
     begin
@@ -75,15 +79,16 @@ class App < Sinatra::Base
     end
   end
 
-  put '/users/:id?' do
+  put '/users/:id/?' do
     param :id, Integer, required: true, max: 2147483647, min: -2147483648
 
     request.body.rewind
     data = JSON.parse request.body.read
+    return status 403 if data.has_key?("id")
 
     begin
       user = User.find_by_id(params[:id])
-      user.update_all(data)
+      user.update(data)
     rescue
       return status 400
     end
